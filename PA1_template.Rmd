@@ -7,9 +7,34 @@ output:
 
 
 ## Loading and preprocessing the data
+Load the knitr package and set the global options for the code chunks
+```{r echo=TRUE}
+library(knitr)
+opts_chunk$set(fig.width=12, fig.height=8, fig.path='figure/',echo=TRUE)
+```
 
 
+Read the activity data
 
+```{r}
+data <- read.csv("activity.csv",stringsAsFactors = FALSE)
+str(data)
+```
+
+There are 1440 (24*60) minutes in a day. The data has been taken at every 5 minutes interval for the month of October and November in 2012. Check that there are 288 entries (1440/5) for each date of the two months.
+
+```{r}
+table(data$date)
+```
+
+Conver the character date format into correct date format in the data frame
+```{r}
+data$date = as.Date(data$date,format("%Y-%m-%d"))
+```
+Check data has been properly transformed to reflect dates correctly
+```{r}
+str(data)
+```
 ## What is mean total number of steps taken per day?
 
 
