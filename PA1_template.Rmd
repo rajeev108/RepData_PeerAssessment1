@@ -1,5 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: Rajeev Trikha
 output: 
   html_document:
     keep_md: true
@@ -14,7 +15,7 @@ opts_chunk$set(fig.width=12, fig.height=8, fig.path='figure/',echo=TRUE)
 ```
 
 
-Read the activity data
+Read the activity data from the working directory
 
 ```{r}
 data <- read.csv("activity.csv",stringsAsFactors = FALSE)
@@ -37,7 +38,29 @@ str(data)
 ```
 ## What is mean total number of steps taken per day?
 
+Establish total number of steps taken each day, whilst ignoring NAs
 
+```{r}
+library(dplyr)
+dailyTotalSteps <- group_by(data,date) %>%
+                            summarise(sum(steps, na.rm=TRUE))
+```
+
+Plot the histogram of total steps taken each day using 15 breaks and show mean and median steps.
+```{r totalStepsPlot}
+names(dailyTotalSteps)[2] <- "steps"
+daily_mean <- round(mean(dailyTotalSteps$steps),0)
+daily_median <- round(median(dailyTotalSteps$steps),0)
+hist(dailyTotalSteps$steps,breaks=15,main="Number of steps taken per day",xlab="Total steps",col="grey")
+abline(v=daily_mean, lwd = 2, col = "blue")
+abline(v=daily_median, lwd = 2, col = "red")
+legend("topright",fill=c("blue","red"),legend=c("mean","median"))
+```
+
+The mean value is `r daily_mean` and the median value is `r daily_median`. Check using 5 point summary
+```{r}
+summary(dailyTotalSteps$steps)
+```
 
 ## What is the average daily activity pattern?
 
