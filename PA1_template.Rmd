@@ -89,6 +89,42 @@ The maximum average steps of `r maxSteps` occurs in the interval `r maxInterval`
 
 ## Imputing missing values
 
+```{r}
+missing_steps <- sum(is.na(data$steps))
+missing_anywhere <- nrow(data) - sum(complete.cases(data))
+```
+
+Rows with NA in steps are `r missing_steps`. Number of rows with NA in at least one column are `r missing_anywhere`. As both values are equal, the NAs only exist in column steps.
+
+We are going to assign the average value for the interval to the missing values.
+
+```{r totsNAreplaced}
+# use the stepsByInterval dataset created earlier for average steps and rename the seond column
+names(stepsByInterval)[2] <- "avg_steps"
+# Create a combined dataset which attaces the avg_steps column to the original data
+new_data <- left_join(data,stepsByInterval) 
+# replace NAs with average value
+new_data$steps[which(is.na(new_data$steps))] <- new_data$avg_steps[which(is.na(new_data$steps))]
+
+# calculate mean,median and plot
+dailyTotalSteps <- group_by(new_data,date) %>%
+                            summarise(sum(steps))
+# Below is copied from the earlier plot but would normally be better off in a function
+names(dailyTotalSteps)[2] <- "steps"
+new_mean <- round(mean(dailyTotalSteps$steps),0)
+new_median <- round(median(dailyTotalSteps$steps),0)
+hist(dailyTotalSteps$steps,breaks=15,main="Number of steps taken per day with NAs replaced",xlab="Total steps",col="grey")
+abline(v=new_mean, lwd = 2, col = "blue")
+abline(v=new_median, lwd = 2, col = "red")
+legend("topright",fill=c("blue","red"),legend=c("mean","median"))
+
+```
+The new mean value with NAs replaced is `r new_mean` and the median value is `r new_median`. Check using 5 point summary
+```{r}
+summary(dailyTotalSteps$steps)
+```
+
+The original values for the meaan and median were `r daily_mean` and `r daily_median`. It is apparent that the new mean and median are nearly the same. The mean and median lines in the plot are overlapping. The values for both the mean and median have increased too. It was a left skewed plot so replacing NAs has had a slight rightward shift.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
