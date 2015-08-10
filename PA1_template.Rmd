@@ -64,7 +64,28 @@ summary(dailyTotalSteps$steps)
 
 ## What is the average daily activity pattern?
 
+Establish average number of steps taken during each interval, whilst ignoring NAs
 
+```{r}
+stepsByInterval <- group_by(data,interval) %>%
+                            summarise(mean(steps, na.rm=TRUE))
+str(stepsByInterval)
+```
+
+Plot the average daily activity pattern
+
+```{r averageSteps}
+names(stepsByInterval)[2] <- "steps"
+# Find maximum interval row and the values
+maxrow <- which.max(stepsByInterval$steps)
+maxInterval <- stepsByInterval[maxrow,1]
+maxSteps <- stepsByInterval[maxrow,2]
+#plot lines graph
+plot(stepsByInterval$interval,stepsByInterval$steps,main="Average steps per interval",xlab="5 minute Intervals",ylab="Average Steps",pch="")
+lines(stepsByInterval$interval,stepsByInterval$steps)
+```
+
+The maximum average steps of `r maxSteps` occurs in the interval `r maxInterval`.
 
 ## Imputing missing values
 
